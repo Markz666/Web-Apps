@@ -1,0 +1,18 @@
+{
+  "name": "assignment4",
+  "version": "1.0.0",
+  "description": "practice usage of redis",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Mingxiang Zhao",
+  "license": "ISC",
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "express": "^4.16.2",
+    "fs": "0.0.1-security",
+    "redis": "^2.8.0"
+  }
+}
