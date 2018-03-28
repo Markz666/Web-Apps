@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <title>Socket.io Chat</title>
+      
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+      <style>
+        #messages {
+          margin-top: 18px;
+        }
+        li {
+          text-align: center;
+        }
+        .form-control{
+          width: 50%
+        }
+      </style>
+      
+  </head>
+  <body>
+    <div class="container">
+      <form>
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" class="form-control" id="username" required>
+        </div>
+
+        <div class="form-group">
+          <label for="search_query">Search query</label>
+          <input type="text" class="form-control" id="search_query" required>
+        </div>
+
+        <div class="form-group">
+            <label for="message">Message</label>
+            <input type="text" class="form-control" id="message" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="color: #ffffff; background-color: #0073eb;">Submit</button>
+
+      </form>
+      <ul id="messages" class="list-group"></ul>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+   
+    <script>
+      $(() => {
+        let socket = io();
+        $('form').submit(() => {
+          let information = {
+            username: $('#username').val(),
+            search_query: $('#search_query').val(),
+            message: $('#message').val()
+          };
+          socket.emit('chat message', information);
+          // read-only after submit
+          $('#username').attr("readonly","readonly");
+          // cleared on submit
+          $('#search_query').val('');
+          $('#message').val('');
+          return false;
+        });
+        socket.on('chat message', (msg) => {
+          $('#messages').append(`<div class="alert alert-success" role="alert"><b>username:</b> ${msg.username}</div>`);
+          $('#messages').append(`<div class="alert alert-success" role="alert"><b>search for:</b> ${msg.search_query}</div>`);
+          $('#messages').append(`<div class="alert alert-success" role="alert"><b>message:</b> ${msg.message}</div>`);
+          if (msg.imgURL.length == 0 || msg == "timed out") {
+            $('#messages').append(`<div class="alert alert-danger" role="alert">Images about ${msg.search_query} not found.</div>`);
+          } else {
+            msg.imgURL.forEach((imgURL) => {   
+              $('#messages').append($('<li class="list-group-item">').prepend(`<img id="theImg" src="${imgURL}" alt="${msg.search_query}" class="img-thumbnail" />`));
+            }, this);
+            // window.scrollTo(x-coord, y-coord)
+            window.scrollTo(0, document.body.scrollHeight);
+          };
+        });
+      });
+    </script>
+      
+  </body>
+</html>
